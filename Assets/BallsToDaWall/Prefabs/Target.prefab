@@ -50,7 +50,7 @@ MonoBehaviour:
   _pointWorth: 1
   _spawningBounds:
     min: {x: -0.6, y: -1}
-    max: {x: 0.6, y: 1}
+    max: {x: 0.6, y: 1.25}
   _collider: {fileID: 1807966507625542435}
   _psysHit: {fileID: 5788290844343725311}
   _scorePopup: {fileID: 1972931983742044532, guid: 471f5c560b5f1ca4997d9afeca5c8846,

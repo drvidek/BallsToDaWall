@@ -34,7 +34,7 @@ public class ScoreKeeper : MonoBehaviour
     /// Triggers when the multiplier changes, with the value of the change
     /// </summary>
     public Action<float> onMultiplierChange;
-    
+
     /// <summary>
     /// Should the multiplier use 0 as its base number? If false, 1 will be used.
     /// </summary> 

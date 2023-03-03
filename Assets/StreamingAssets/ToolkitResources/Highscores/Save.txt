@@ -1,0 +1,10 @@
+New0:1600
+New7:1500
+New7:1000
+New8:1000
+New2:650
+NameC:500
+New0:450
+New1:405
+NameB:400
+New3:18
