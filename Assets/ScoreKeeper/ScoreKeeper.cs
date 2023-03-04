@@ -89,5 +89,13 @@ public class ScoreKeeper : MonoBehaviour
         onMultiplierChange?.Invoke(_multiplier - oldMulti);
     }
 
+    /// <summary>
+    /// Resets score and multiplier to 0, with no event triggered
+    /// </summary>
+    public void Reset()
+    {
+        Score = 0;
+        Multiplier = 0;
+    }
 
 }

@@ -10,8 +10,8 @@ public class HighscoreKeeper
     /// </summary>
     public static List<KeyValuePair<string, float>> Entries => _entries;
     private static int _maxEntriesToKeep = 10;
-    private static string _savePath = Path.Combine(Application.streamingAssetsPath + "/ToolkitResources/Highscores/Save.txt");
-    private static string _defaultPath = Path.Combine(Application.streamingAssetsPath + "/ToolkitResources/Highscores/Default.txt");
+    private static string _savePath = Path.Combine(Application.streamingAssetsPath, "ToolkitResources/Highscores/Save.txt");
+    private static string _defaultPath = Path.Combine(Application.streamingAssetsPath, "ToolkitResources/Highscores/Default.txt");
     /// <summary>
     /// A string of \n separated names in order from high to low
     /// </summary>
@@ -72,7 +72,15 @@ public class HighscoreKeeper
     public static void LoadEntries()
     {
         _entries.Clear();
-        UnpackEntriesFromStringArray(LoadStringArrayFromFile(File.Exists(_savePath) ? _savePath : _defaultPath));
+        string path = File.Exists(_savePath) ? _savePath : _defaultPath;
+        if (Application.platform != RuntimePlatform.Android)
+        {
+            UnpackEntriesFromStringArray(LoadStringArrayFromFile(path));
+        }
+        else
+        {
+
+        }
         SortEntries();
     }
 
@@ -113,6 +121,7 @@ public class HighscoreKeeper
             i++;
         }
         reader.Close();
+
         return array;
     }
 

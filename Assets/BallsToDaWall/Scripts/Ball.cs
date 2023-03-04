@@ -18,17 +18,49 @@ public class Ball : MonoBehaviour
     private bool _wasReset;
     private bool _hitTarget;
 
+    private UltimateXR.Manipulation.IUxrGrabbable _grabbable;
+
     void Start()
     {
         _homePosition = transform.position;
         if (_rigidbody == null)
             _rigidbody = GetComponent<Rigidbody>();
+        GameManager.Singleton.onStateChange += OnStateChange;
+        _grabbable = GetComponent<UltimateXR.Manipulation.IUxrGrabbable>();
+        OnStateChange(GameManager.gameState);
+    }
 
+    private void OnStateChange(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.menu:
+                EndRound();
+                break;
+            case GameState.play:
+                StartRound();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void StartRound()
+    {
+        ResetBall();
+    }
+
+    private void EndRound()
+    {
+        DisableBall();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!GameManager.IsPlaying)
+            return;
+
         _psysCatch.transform.LookAt(transform.position + Vector3.up);
 
         _trail.emitting = !_rigidbody.isKinematic;
@@ -92,6 +124,14 @@ public class Ball : MonoBehaviour
 
         _trail.emitting = false;
         _psysCatch.Play();
+    }
+
+    private void DisableBall()
+    {
+        _trail.emitting = false;
+        _rigidbody.isKinematic = true;
+        _grabbable.ReleaseGrabs(false);
+        transform.position = Vector3.up * 100f;
     }
 
     public void DirectBallToPlayer()

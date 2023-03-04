@@ -324,11 +324,7 @@ public class Alarm
     /// <returns></returns>
     public static Alarm Get(float t, bool looping = false, bool autoRelease = true, float scale = 1f, Type type = Type.scaled)
     {
-        if (AlarmRunner.Singleton == null)
-        {
-            Debug.LogWarning("No AlarmRunner found in scene, Alarms will not work. Creating a AlarmRunner.");
-            AlarmRunner.CreateAlarmRunner();
-        }
+        CheckForAlarmRunner();
 
         Alarm alarm = null;
 
@@ -373,11 +369,7 @@ public class Alarm
     /// <returns></returns>
     public static Alarm Get(float t, string name, bool looping = false, bool autoRelease = true, float scale = 1f, Type type = Type.scaled)
     {
-        if (AlarmRunner.Singleton == null)
-        {
-            Debug.LogWarning("No AlarmRunner found in scene, Alarms will not work. Creating a AlarmRunner.");
-            AlarmRunner.CreateAlarmRunner();
-        }
+        CheckForAlarmRunner();
 
         Alarm alarm = null;
 
@@ -418,6 +410,7 @@ public class Alarm
     /// <param name="name"></param>
     public static void SetFromInspector(Alarm alarm, string name = "AlarmFromInspector")
     {
+        CheckForAlarmRunner();
         alarm._name = name;
         _alarmsInUse.Add(alarm);
         _alarmsFromInspector.Add(alarm);
@@ -491,5 +484,13 @@ public class Alarm
         }
     }
 
+    private static void CheckForAlarmRunner()
+    {
+        if (AlarmRunner.Singleton == null)
+        {
+            Debug.LogWarning("No AlarmRunner found in scene, Alarms will not work. Creating a AlarmRunner.");
+            AlarmRunner.CreateAlarmRunner();
+        }
+    }
 }
 

@@ -30,6 +30,33 @@ public class Target : MonoBehaviour
         var main = _psysHit.main;
         main.startColor = GetComponentInChildren<Renderer>().sharedMaterial.GetColor("_EmissionColor");
         Reposition();
+        GameManager.Singleton.onStateChange += OnStateChange;
+        OnStateChange(GameManager.gameState);
+    }
+
+    private void OnStateChange(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.menu:
+                EndRound();
+                break;
+            case GameState.play:
+                StartRound();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void StartRound()
+    {
+        Reposition();
+    }
+
+    private void EndRound()
+    {
+        DisableTarget();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -46,6 +73,11 @@ public class Target : MonoBehaviour
         float x = Random.Range(SpawnXMin, SpawnXMax);
         float y = Random.Range(SpawnYMin, SpawnYMax);
         transform.position = new Vector3(x, y, transform.position.z);
+    }
+
+    private void DisableTarget()
+    {
+        transform.position += Vector3.down * 10f;
     }
 
     IEnumerator OnHit()
