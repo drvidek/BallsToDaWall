@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         HighscoreKeeper.LoadEntries();
-        UpdateEntryDisplay();
+        UpdateHighScoreDisplay();
 
         ScoreKeeper.main.onMultiplierChange += DrawMultiplier;
         ScoreKeeper.main.onScoreChange += DrawScore;
@@ -142,7 +142,7 @@ public class GameManager : MonoBehaviour
     public void AddScore()
     {
         if (HighscoreKeeper.ValidateNewEntry("New" + newCount.ToString(), float.Parse(inputField.text)))
-            UpdateEntryDisplay();
+            UpdateHighScoreDisplay();
         newCount++;
     }
 
@@ -154,10 +154,10 @@ public class GameManager : MonoBehaviour
     public void LoadHighScores()
     {
         HighscoreKeeper.LoadEntries();
-        UpdateEntryDisplay();
+        UpdateHighScoreDisplay();
     }
 
-    private void UpdateEntryDisplay()
+    private void UpdateHighScoreDisplay()
     {
         _highScoreDisplay.scoreList.text = HighscoreKeeper.ScoreList;
         _highScoreDisplay.nameList.text = HighscoreKeeper.NameList;

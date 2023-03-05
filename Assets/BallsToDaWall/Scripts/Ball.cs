@@ -1,15 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    private Vector3 _homePosition;
+    private static List<Ball> _allBalls = new();
+    private static Vector3 _homePosition;
     [SerializeField] private Rigidbody _rigidbody;
     public Rigidbody Rigidbody => _rigidbody;
     [SerializeField] private float _redirectForce;
     public float RedirectForce => _redirectForce;
     [SerializeField] private Transform _player;
     [SerializeField] private bool _useCustomGravity;
-    [SerializeField] private float _gravity;
+    [SerializeField] private float _gravity, _shootForce;
     [SerializeField] private TrailRenderer _trail;
     [SerializeField] private ParticleSystem _psysCatch;
     private float _zDir;
@@ -20,14 +22,18 @@ public class Ball : MonoBehaviour
 
     private UltimateXR.Manipulation.IUxrGrabbable _grabbable;
 
-    void Start()
+    private void Awake()
     {
-        _homePosition = transform.position;
+        if (_homePosition == Vector3.zero)
+            _homePosition = transform.position;
+
+        if (!_allBalls.Contains(this))
+            _allBalls.Add(this);
+
         if (_rigidbody == null)
             _rigidbody = GetComponent<Rigidbody>();
         GameManager.Singleton.onStateChange += OnStateChange;
         _grabbable = GetComponent<UltimateXR.Manipulation.IUxrGrabbable>();
-        OnStateChange(GameManager.gameState);
     }
 
     private void OnStateChange(GameState state)
@@ -67,6 +73,13 @@ public class Ball : MonoBehaviour
 
         if (_rigidbody.isKinematic)
         {
+            if (Input.GetButtonDown("Shoot Ball"))
+            {
+                _rigidbody.isKinematic = false;
+                _rigidbody.AddForce((Vector3.forward + Vector3.up) * _shootForce, ForceMode.VelocityChange);
+                return;
+            }
+
             if (!_wasKinematic)
             {
                 if (!_wasReset)
@@ -115,6 +128,12 @@ public class Ball : MonoBehaviour
 
     private void ResetBall()
     {
+        if (_allBalls.Count > 1)
+        {
+            RemoveBall();
+            return;
+        }
+        
         transform.position = _homePosition;
         //_rigidbody.velocity = Vector3.zero;
         _rigidbody.isKinematic = true;
@@ -128,10 +147,22 @@ public class Ball : MonoBehaviour
 
     private void DisableBall()
     {
+        if (_allBalls.Count > 1)
+        {
+            RemoveBall();
+            return;
+        }
         _trail.emitting = false;
         _rigidbody.isKinematic = true;
         _grabbable.ReleaseGrabs(false);
         transform.position = Vector3.up * 100f;
+    }
+
+    void RemoveBall()
+    {
+        GameManager.Singleton.onStateChange -= OnStateChange;
+        _allBalls.Remove(this);
+        Destroy(this.gameObject);
     }
 
     public void DirectBallToPlayer()
@@ -146,5 +177,13 @@ public class Ball : MonoBehaviour
     public void HitTarget()
     {
         _hitTarget = true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.name == "Killplane")
+        {
+            ResetBall();
+        }
     }
 }

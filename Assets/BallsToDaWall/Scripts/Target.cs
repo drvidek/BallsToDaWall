@@ -2,16 +2,16 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 
+[System.Serializable]
+public struct Bounds2D
+{
+    public Vector2 min;
+    public Vector2 max;
+}
 public class Target : MonoBehaviour
 {
-    [System.Serializable]
-    private struct SpawningBounds
-    {
-        public Vector2 min;
-        public Vector2 max;
-    }
     [SerializeField] private float _pointWorth;
-    [SerializeField] private SpawningBounds _spawningBounds;
+    [SerializeField] private Bounds2D _spawningBounds;
     [SerializeField] private Collider _collider;
 
     private Vector3 _homePosition;
@@ -24,14 +24,17 @@ public class Target : MonoBehaviour
     public float SpawnYMin => _homePosition.y + _spawningBounds.min.y;
     public float SpawnYMax => _homePosition.y + _spawningBounds.max.y;
 
-    private void Start()
+    private void Awake()
     {
         _homePosition = transform.position;
         var main = _psysHit.main;
         main.startColor = GetComponentInChildren<Renderer>().sharedMaterial.GetColor("_EmissionColor");
-        Reposition();
+    }
+
+    private void Start()
+    {
         GameManager.Singleton.onStateChange += OnStateChange;
-        OnStateChange(GameManager.gameState);
+        Hide();
     }
 
     private void OnStateChange(GameState state)
@@ -56,7 +59,7 @@ public class Target : MonoBehaviour
 
     private void EndRound()
     {
-        DisableTarget();
+        Hide();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -72,12 +75,12 @@ public class Target : MonoBehaviour
     {
         float x = Random.Range(SpawnXMin, SpawnXMax);
         float y = Random.Range(SpawnYMin, SpawnYMax);
-        transform.position = new Vector3(x, y, transform.position.z);
+        transform.position = new Vector3(x, y, _homePosition.z);
     }
 
-    private void DisableTarget()
+    private void Hide()
     {
-        transform.position += Vector3.down * 10f;
+        transform.position = Vector3.down * 50f;
     }
 
     IEnumerator OnHit()
